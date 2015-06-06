@@ -67,13 +67,15 @@ function create() {
 
     ////
     //bouncer = new Phaser.Rectangle(0, 550, 800, 50);
-    bouncer = game.add.sprite(360 * widthScale, 1100 * heightScale, 'blocker');
+    bouncer = game.add.sprite(360 * widthScale, 1000 * heightScale, 'blocker');
+
+    // bouncer.setScaledX = function(x) { this.x = x + this.x ;}
     setScale(bouncer);
 
     game.physics.enable(bouncer, Phaser.Physics.ARCADE);
     bouncer.body.collideWorldBounds = true;
     bouncer.body.immovable = true;
-    
+
     speed = scaleWidth(350);
     var left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     left.onDown.add(moveleft, this);
@@ -88,7 +90,35 @@ function create() {
     bouncer.body.maxVelocity.y = 0;
 
 
-    // enable touch
+
+    // Bouncer controll box
+    var cbox = game.add.bitmapData(scaleWidth(1280), scaleHeight(128));
+
+    // draw to the canvas context like normal
+    cbox.ctx.beginPath();
+    cbox.ctx.rect(0, 0, scaleWidth(1280), scaleHeight(128));
+    cbox.ctx.fillStyle = '#ff0000';
+    cbox.ctx.fill();
+
+    // use the bitmap data as the texture for the sprite
+    var controller = game.add.sprite(0, scaleHeight(1150), cbox);
+    game.physics.enable(controller, Phaser.Physics.ARCADE);
+    controller.inputEnabled = true;
+    controller.input.enableDrag(false);
+    controller.input.allowHorizontalDrag = false;
+    controller.input.allowVerticalDrag = false;
+    controller.body.immovable = true;
+    controller.body.moves = false;
+    
+    console.log(controller);
+    
+    // controller.input.
+    controller.input.updateDrag = function(pointer) {
+    // do specialised stuff
+     bouncer.x = pointer.x;
+    // how to call the generic implementation:
+    Phaser.InputHandler.prototype.updateDrag.call(this,pointer);
+}
 
     //  Input Enable the sprites
     bouncer.inputEnabled = true;
@@ -103,7 +133,7 @@ function create() {
     blocks.physicsBodyType = Phaser.Physics.ARCADE;
 
     // 1 row of blocks
-    for (var i = 0; i < 8; i+=2) {
+    for (var i = 0; i < 8; i += 2) {
         for (var j = 0; j < 10; j++) {
             // var block = blocks.create(100 + (j * 64), 100 + (i * 64), 'block');
             var block = blocks.create(scaleWidth(100 + (j * (32 + 24))), scaleHeight(100 + (i * (32 + 24))), 'block');
@@ -139,12 +169,20 @@ function setScale(_obj) {
     _obj.scale.set(widthScale, heightScale);
 }
 
-function scaleWidth(unscaled){
-    return unscaled * widthScale; 
+function scaleWidth(unscaled) {
+    return unscaled * widthScale;
 }
 
-function scaleHeight(unscaled){
-    return unscaled * heightScale; 
+function scaleHeight(unscaled) {
+    return unscaled * heightScale;
+}
+
+function onDragStart(sprite, pointer) {
+
+    result = "Dragging " + sprite.key;
+
+    bouncer.x = pointer.x;
+
 }
 
 function update() {
@@ -162,4 +200,9 @@ function render() {
     game.debug.spriteInfo(bouncer, 32, 32);
     //game.debug.body(bouncer);
 
+}
+
+function doSomething(sprite, pointer, arg3) {
+    bouncer.x = pointer.x;
+    console.log(arg3);
 }
