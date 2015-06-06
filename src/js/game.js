@@ -32,8 +32,8 @@ function preload() {
     //  string by which we'll identify the image later in our code.
 
     //  The second parameter is the URL of the image (relative)
-    game.load.image('flyer', 'assets/sprites/phaser-dude.png', 27, 40);
-    game.load.image('blocker', 'assets/sprites/blocker.png', 32, 32);
+    game.load.image('ball', 'assets/sprites/ball.png', 32, 32);
+    game.load.image('blocker', 'assets/sprites/blocker.png', 64, 16);
     game.load.image('block', 'assets/sprites/block.png', 32, 32);
 }
 
@@ -48,7 +48,7 @@ function create() {
     //  This creates a simple sprite that is using our loaded image and
     //  displays it on-screen
     //  and assign it to a variable
-    image = game.add.sprite(0, 0, 'flyer');
+    image = game.add.sprite(0, 0, 'ball');
     setScale(image)
 
 
