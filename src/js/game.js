@@ -56,7 +56,7 @@ function create() {
     game.physics.enable(image, Phaser.Physics.ARCADE);
 
     //  This gets it moving
-    image.body.velocity.setTo(scaleWidth(300), scaleHeight(300));
+    image.body.velocity.setTo(scaleWidth(400), scaleHeight(400));
 
     //  This makes the game world bounce-able
     image.body.collideWorldBounds = true;
@@ -109,16 +109,28 @@ function create() {
     controller.input.allowVerticalDrag = false;
     controller.body.immovable = true;
     controller.body.moves = false;
-    
+
     console.log(controller);
-    
+
     // controller.input.
+    var dragDiff = 0;
     controller.input.updateDrag = function(pointer) {
-    // do specialised stuff
-     bouncer.x = pointer.x;
-    // how to call the generic implementation:
-    Phaser.InputHandler.prototype.updateDrag.call(this,pointer);
-}
+        // do specialised stuff
+        // console.log("Pointer: ");
+        // console.log(pointer);
+
+        if (dragDiff != 0) {
+            console.log(dragDiff);
+            bouncer.x += (pointer.x - dragDiff)*2;
+            dragDiff = 0;
+        }
+        else {
+            dragDiff = pointer.x
+        }
+        // how to call the generic implementation:
+        Phaser.InputHandler.prototype.updateDrag.call(this, pointer);
+    }
+    controller.events.onDragStop.add(function() {dragDiff = 0; }, this);
 
     //  Input Enable the sprites
     bouncer.inputEnabled = true;
