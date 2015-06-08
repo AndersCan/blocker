@@ -1,4 +1,4 @@
-// mods by Patrick OReilly 
+// mods by Patrick OReilly
 // Twitter: @pato_reilly Web: http://patricko.byethost9.com
 
 // const width = Math.min(window.innerWidth, 720);
@@ -61,7 +61,7 @@ function create() {
     //  This makes the game world bounce-able
     image.body.collideWorldBounds = true;
 
-    //  This sets the image bounce energy for the horizontal 
+    //  This sets the image bounce energy for the horizontal
     //  and vertical vectors. "1" is 100% energy return
     image.body.bounce.set(1);
 
@@ -110,23 +110,14 @@ function create() {
     controller.body.immovable = true;
     controller.body.moves = false;
 
-    console.log(controller);
+    //console.log(controller);
 
     // controller.input.
-    var dragDiff = 0;
+
+    var throttled = _.throttle(dragBlocker, 25);
     controller.input.updateDrag = function(pointer) {
         // do specialised stuff
-        // console.log("Pointer: ");
-        // console.log(pointer);
-
-        if (dragDiff != 0) {
-            console.log(dragDiff);
-            bouncer.x += (pointer.x - dragDiff)*2;
-            dragDiff = 0;
-        }
-        else {
-            dragDiff = pointer.x
-        }
+        throttled(pointer);
         // how to call the generic implementation:
         Phaser.InputHandler.prototype.updateDrag.call(this, pointer);
     }
@@ -176,6 +167,11 @@ function stop() {
 function breakblock(_ball, _block) {
     _block.kill();
 }
+function ballOverlap(_ball, _block) {
+    console.log("Overlap!");
+    image.body.velocity.setTo(scaleWidth(-400), scaleHeight(-400));
+
+}
 
 function setScale(_obj) {
     _obj.scale.set(widthScale, heightScale);
@@ -198,6 +194,8 @@ function onDragStart(sprite, pointer) {
 }
 
 function update() {
+    //game.physics.arcade.overlap(image, bouncer, ballOverlap, null, this);
+
     game.physics.arcade.collide(image, bouncer, function() {
         console.log("Crash");
     }, null, this);
@@ -216,5 +214,16 @@ function render() {
 
 function doSomething(sprite, pointer, arg3) {
     bouncer.x = pointer.x;
-    console.log(arg3);
+}
+
+var dragDiff = 0;
+function dragBlocker(pointer){
+  if (dragDiff != 0) {
+      // console.log(dragDiff);
+      bouncer.x += (pointer.x - dragDiff)*3;
+      dragDiff = 0;
+  }
+  else {
+      dragDiff = pointer.x
+  }
 }
